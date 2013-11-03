@@ -1,0 +1,139 @@
+\documentclass[11pt, oneside, BCOR0mm, DIV9, headinclude]{scrartcl}
+\usepackage{scrpage2}
+\usepackage{lmodern}
+\usepackage[kerning=true, spacing=true]{microtype}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{caption}
+\usepackage{subcaption}
+%\usepackage{fullpage}
+%\usepackage{array}
+
+\def\myTitle{Webengineering}
+\def\myAuthor{B.~Strobel, K.~Krammer, L.~Hnatek, S.~Fischer}  % <----- HIER EURE NAMEN EINTRAGEN
+\def\mySheetNo{Blatt 02}                                      % <----- AKT\"{u}LLE BLATTNUMMER EINTRAGEN
+\def\myAbgabeDate{}
+
+\usepackage[pdftex,colorlinks=true,
+                      pdfstartview=FitV,
+                      linkcolor=blue,
+                      citecolor=blue,
+                      urlcolor=blue,
+                      breaklinks=true, 
+                      plainpages=false,
+                      pdfpagelabels
+          ]{hyperref}
+          \pdfinfo{
+            /Title      (\myTitle)
+            /Author     (\myAuthor)
+} %%F\"{u}r Bookmarks im PDF-Dokument
+\usepackage{url} 
+\usepackage{color}
+\usepackage{listings}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%Headereinstellungen    %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\renewcommand{\chaptermark}[1]{ \markboth{#1}{}}
+%Definiere hier einige Variablen die die Headings dann immer enthalten wenn man
+% das Kommando auch einfuegt
+\newcommand{\iHeadText}{\scriptsize{\myAuthor}}%{\leftmark} %links / inner
+\newcommand{\iHeadTextO}{\scriptsize{\myAuthor}} %Bei pagestyle plain
+\newcommand{\cHeadText}{} %mitte
+\newcommand{\cHeadTextO}{}
+\newcommand{\oHeadText}{\scriptsize\mySheetNo} %rechts /outer
+\newcommand{\oHeadTextO}{\scriptsize\mySheetNo}
+\newcommand{\iFootText}{\scriptsize  } %links
+\newcommand{\iFootTextO}{\scriptsize  }
+\newcommand{\cFootText}{} %mitte
+\newcommand{\cFootTextO}{}
+\newcommand{\oFootText}{\pagemark}
+\newcommand{\oFootTextO}{\pagemark}
+%Kommando zum Einsetzen des Headers
+\newcommand{\setStandardHeader}{\ihead[\iHeadTextO]{\iHeadText} \chead[\cHeadTextO]{\cHeadText}
+\ohead[\oHeadTextO]{\oHeadText} \ifoot[\iFootTextO]{\iFootText} 
+\cfoot[\cFootTextO]{\cFootText} \ofoot[\oFootTextO]{\oFootText}
+\automark[section]{chapter}} % %automark wichtig damit right und leftmark
+%gesetzt werden
+
+\pagestyle{scrheadings}
+\clearscrheadfoot %alle bisherigen Einstellungen loeschen (eher optional)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Headereinstellungen Ende   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setlength{\parskip}{0.4em}
+
+%___________________________________________________________________________________________%
+\begin{document}
+\lstset{language=Matlab,numbers=left,captionpos=b}
+\setStandardHeader
+
+\begin{center}
+
+\hrule\vspace{5pt}
+\large\myAuthor\\
+\normalsize Webengineering - \mySheetNo\\
+WiSe 2013/14, Inst. f. Medieninformatik, Universität Ulm
+\vspace{5pt}
+\hrule
+\end{center}
+
+
+%% Blatt beginnt hier
+
+\section*{02.~Aufgabe: HTTP}
+
+\begin{enumerate}
+    \item 	Eine idempotente HTTP-Methode kann mehrere male aufgerufen werden, ohne dass sich
+		das Ergebnis "andert.
+
+		Mit POST wird etwas erstellt.
+		Durch die POST-Methode wird gefordert, dass der Server die mitgeschickte Repr"asentaton 
+		akzeptiert, welche durch die Zielressource verarbeitet werden soll.
+
+		Mit PUT wird etwas erstellt oder geupdated.
+		Durch die PUT-Methode wird gefordert, dass der Zustand der Zielressource erzeugt oder 
+		ersetzt wird durch den definierten Zustand der Repr"asentation, welche im Request 
+		mitgeschickt wird.
+
+
+		Beispiele:
+
+		``POST/buch'' wird ein neues Buch kreiieren und
+		der Server antwortet mit einer neue URL, die das Buch identifiziert.
+		Also beispielsweise ``/buch/2''.
+
+		``PUT/buecher/2'' wird entweder das neue Buch mit der ID 2 erstellen, oder das 
+		bereits existierende Buch mit der ID 2 ersetzen.
+		\begin{verbatim}http://tools.ietf.org/html/draft-ietf-httpbis-p2-semantics-21#section-5.3.4 \end{verbatim}
+
+
+    \item       Methoden die ``safe'' sind, werden nie die Repr"asentation einer Ressource
+	        manipulieren (Z.B. HEAD, OPTIONS und GET).
+		\begin{verbatim}http://restcookbook.com/HTTP%20Methods/idempotency/\end{verbatim}
+
+    \item       Der Zweck einer persistenten HTTP-Verbindung ist, die gleiche TCP-Verbindung zu
+		nutzen um mehrere Requests/Responses zu senden/erhalten, statt immer wieder die 
+		Verbindug zum Server neu aufzubauen. Der Client kann mehrere Requests senden, ohne 
+		zuerst auf jeden Response warten zu m"ussen (effizienter in k"urzerer Zeit).
+		
+		Eine persistente Verbindung muss nicht aufgebaut werden, wenn sowieso nur ein
+		Request/Response erfolgen soll.
+		\begin{verbatim}http://tools.ietf.org/html/draft-ietf-httpbis-p2-semantics-21#section-5.3.4 \end{verbatim}
+
+\end{enumerate}
+
+
+\end{document}
+
