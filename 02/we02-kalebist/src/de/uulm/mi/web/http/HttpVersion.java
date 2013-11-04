@@ -51,7 +51,7 @@ public enum HttpVersion
 	{
 		//TODO: Extract HTTP Version from request line (see http://tools.ietf.org/html/rfc2616.html#section-5.1).
 		// Bianca, Leo
-		String extractedHttpVersion = requestLine.split(" ")[1];
+		String extractedHttpVersion = requestLine.split(" ")[2];
 		// extractedHttpVersion is expected to be "HTTP/1.0" or "HTTP/1.1"
 		if(extractedHttpVersion != null){
 			 if (extractedHttpVersion.equals(HttpVersion.VERSION_1_0.toString()))
