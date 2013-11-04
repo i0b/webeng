@@ -35,6 +35,8 @@ public class BasicHttpWorker extends HttpWorker
 		String requestUri = requestLine.split(" ")[1];
 		HttpVersion httpVersion = HttpVersion.extractVersion(requestLine);
 		
+		
+		//Restlichen HeaderInformationen in eine Map geschrieben...
 		Map<String, String> headers = new HashMap<String, String>();
 		while(! (requestLine = this.readLine(inputStream)).equals("")) {
 			String key = requestLine.split(": ")[0];
