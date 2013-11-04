@@ -132,6 +132,15 @@ WiSe 2013/14, Inst. f. Medieninformatik, Universität Ulm
 		Request/Response erfolgen soll.
 		\begin{verbatim}http://tools.ietf.org/html/draft-ietf-httpbis-p2-semantics-21#section-5.3.4 \end{verbatim}
 
+	\item   Die angegebene Seite \begin{verbatim}http://mobile3.informatik.uni-ulm.de/we01/cat.jpg\end{verbatim}
+		ist eigentlich eine HTML Datei. Der Browser erkennt das und zeigt sie an.
+
+		Da "uber CSS das Hintergrundbild f"ur den Body angegeben wurde, kann auch dieses angezeigt
+		werden. Unabh"angig davon, dass auch der Link darauf mit HTML falsch referenziert wurde
+		und eigentlich ein JPEG ist. Der Browser bestimmt vor dem Anzeigen des Elementes den Typen 
+		selber, weshalb zuletzt das Katzenbild erscheint.
+		\begin{verbatim}http://www.w3schools.com/cssref/pr_background-image.asp\end{verbatim}
+
 \end{enumerate}
 
 
