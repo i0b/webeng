@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.uulm.mi.web.Http;
 import de.uulm.mi.web.http.HttpMethod;
 import de.uulm.mi.web.http.HttpRequest;
 import de.uulm.mi.web.http.HttpResponse;
 import de.uulm.mi.web.http.HttpVersion;
 import de.uulm.mi.web.http.impl.BasicHttpRequest;
+import de.uulm.mi.web.http.impl.BasicHttpResponse;
 import de.uulm.mi.web.server.HttpWorker;
 
 public class BasicHttpWorker extends HttpWorker
@@ -32,18 +35,25 @@ public class BasicHttpWorker extends HttpWorker
 		String requestUri = requestLine.split(" ")[1];
 		HttpVersion httpVersion = HttpVersion.extractVersion(requestLine);
 		
+		Map<String, String> headers = new HashMap<String, String>();
+		while(! (requestLine = this.readLine(inputStream)).equals("")) {
+			String key = requestLine.split(": ")[0];
+			String value = requestLine.split(": ")[1];
+			headers.put(key, value);
+		}
+		
 		
 		//parse to Object httprequest
 		BasicHttpRequest httprequest = new BasicHttpRequest();
 		httprequest.setHttpVersion(httpVersion);
 		httprequest.setHttpMethod(httpMethod);
 		httprequest.setRequestUri(requestUri);
+		httprequest.setHeaders(headers);
+		//TODO setEntity
 		httprequest.setEntity(null);
-		Map<String, String> headers = new HashMap<String, String>();
-		String[] requestLines = requestLine.split("\n");
 		
-		httprequest.getHeaders();
 		
+		//output
 		return httprequest;
 	}
 
@@ -52,7 +62,7 @@ public class BasicHttpWorker extends HttpWorker
 	{
 		
 		//TODO Keep-Alive in header..
-		HttpResponse response;
+		HttpResponse response = null;
 		
 		if (request.getHttpMethod().equals(HttpMethod.GET)){
 			request.getRequestUri();
@@ -64,7 +74,7 @@ public class BasicHttpWorker extends HttpWorker
 		}
 		
 		// TODO Auto-generated method stub
-		return null;
+		return response;
 	}
 
 	@Override
