@@ -74,7 +74,8 @@ public class BasicHttpWorker extends HttpWorker
 		
 		
 		if (request.getHttpMethod().equals(HttpMethod.GET)){
-			String requestUri = (request.getRequestUri().equals("/") ? BasicHttpServer.WEBROOT+"index.html" : request.getRequestUri());
+			String requestUri = (request.getRequestUri().equals("/") ? "index.html" : request.getRequestUri());
+			requestUri = BasicHttpServer.WEBROOT+requestUri;
 			
 			Path path = Paths.get(requestUri);
 			System.out.println(requestUri);
