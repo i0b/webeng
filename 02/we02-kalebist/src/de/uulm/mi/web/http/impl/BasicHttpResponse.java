@@ -23,6 +23,9 @@ public class BasicHttpResponse implements HttpResponse {
 		this.message = message;
 		this.status = status;
 	}
+	public BasicHttpResponse() {
+		
+	}
 
 	public HttpVersion getHttpVersion() {
 		return message.getHttpVersion();
@@ -54,6 +57,9 @@ public class BasicHttpResponse implements HttpResponse {
 
 	public HttpStatusCode getStatusCode() {
 		return status;
+	}
+	public void setStatusCode(HttpStatusCode statusCode) {
+		this.status = statusCode;
 	}
 
 }

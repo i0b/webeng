@@ -1,5 +1,6 @@
 package de.uulm.mi.web.http.impl;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import de.uulm.mi.web.http.HttpMessage;
@@ -14,7 +15,7 @@ import de.uulm.mi.web.http.HttpVersion;
 public class BasicHttpMessage implements HttpMessage {
 	
 	private HttpVersion httpVersion;
-	private Map<String, String> httpHeaders;
+	private Map<String, String> httpHeaders = new HashMap<String, String>();
 	private byte[] entity;
 	
 	/**
@@ -37,6 +38,9 @@ public class BasicHttpMessage implements HttpMessage {
 	public Map<String, String> getHeaders() {
 		return httpHeaders;
 	}
+	
+	
+	
 	public void setHeaders(Map<String, String> httpHeaders) {
 		this.httpHeaders = httpHeaders;
 	}

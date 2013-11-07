@@ -4,14 +4,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
-import de.uulm.mi.web.Http;
 import de.uulm.mi.web.http.HttpMethod;
 import de.uulm.mi.web.http.HttpRequest;
 import de.uulm.mi.web.http.HttpResponse;
+import de.uulm.mi.web.http.HttpStatusCode;
 import de.uulm.mi.web.http.HttpVersion;
 import de.uulm.mi.web.http.impl.BasicHttpRequest;
 import de.uulm.mi.web.http.impl.BasicHttpResponse;
@@ -52,8 +55,7 @@ public class BasicHttpWorker extends HttpWorker
 		httprequest.setRequestUri(requestUri);
 		httprequest.setHeaders(headers);
 		//TODO setEntity
-		httprequest.setEntity(null);
-		
+		httprequest.setRequestUri(requestUri);
 		
 		//output
 		return httprequest;
@@ -64,26 +66,70 @@ public class BasicHttpWorker extends HttpWorker
 	{
 		
 		//TODO Keep-Alive in header..
-		HttpResponse response = null;
+		request.getHeaders();
+		
+		BasicHttpResponse response = new BasicHttpResponse();
+		response.setHttpVersion(HttpVersion.VERSION_1_1);
+		//response.setHeaders(headers);
+		
 		
 		if (request.getHttpMethod().equals(HttpMethod.GET)){
-			request.getRequestUri();
+			String requestUri = (request.getRequestUri().equals("/") ? BasicHttpServer.WEBROOT+"index.html" : request.getRequestUri());
 			
+			Path path = Paths.get(requestUri);
+			System.out.println(requestUri);
+			
+			byte[] data;
+			try {
+				data = Files.readAllBytes(path);
+				response.setEntity(data);
+				response.setHttpStatusCode(HttpStatusCode.ACCEPTED);
+				Map <String, String> headers = new HashMap<String, String>();
+				headers.put("Server", BasicHttpServer.SERVER_NAME);
+				response.setHeaders(headers);
+				
+			} catch (IOException e) {
+				response.setStatusCode(HttpStatusCode.NOT_FOUND);
+			}
+			
+
 		}
 		
 		else if (request.getHttpMethod().equals(HttpMethod.HEAD)){
 			
 		}
 		
-		// TODO Auto-generated method stub
+		
 		return response;
 	}
 
 	@Override
 	protected void sendResponse(HttpResponse response, OutputStream outputStream) throws IOException
 	{
-		// TODO Auto-generated method stub
+		//Init
+		//PrintWriter out = new PrintWriter(outputStream, false);
+		String statusline = response.getHttpVersion()+" "+response.getStatusCode();
+		Vector<String> headers = new Vector<String>();
+
+		//response.getHeaders();
+		for(String key : response.getHeaders().keySet()) {
+			String value = response.getHeaders().get(key);
+			headers.add(key+": "+value);
+		}
 		
+		
+		//Output
+		String httpresponse = statusline+"\n";
+		for(String header_info : headers) {
+			httpresponse += header_info+" \n";
+		}
+		httpresponse += "\r\n";
+//		httpresponse += entity;
+		outputStream.write(httpresponse.getBytes());
+		outputStream.write(response.getEntity());
+		//out.flush();
+		outputStream.flush();
+
 	}
 
 	@Override
