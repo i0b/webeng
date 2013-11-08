@@ -23,6 +23,8 @@ public class BasicHttpServer implements HttpServer
 	public static final String SERVER_VERSION = "0.1";
 	public static final int DEFAULT_PORT = 8080;
 	public static final String SERVER_SIGNATURE = SERVER_NAME + "/" + SERVER_VERSION;
+	public static final String WEBROOT = "webroot/";
+	
 
 	private volatile boolean running = false;
 
@@ -66,7 +68,16 @@ public class BasicHttpServer implements HttpServer
 	public void dispatchRequest(Socket socket)
 	{
 		workerPool.submit(new BasicHttpWorker(socket, this));
-	}
+/*
+ * For Testing
+ * 		BasicHttpWorker worker = new BasicHttpWorker(socket, this);
+		try {
+			worker.call();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+*/	}
 
 	@Override
 	public void start()

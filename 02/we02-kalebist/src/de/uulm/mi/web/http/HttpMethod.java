@@ -20,7 +20,7 @@ public enum HttpMethod
 	DELETE,
 	TRACE,
 	CONNECT;
-	//TODO: Complete other methods (see http://tools.ietf.org/html/rfc2616.html#section-9)
+	// Complete other methods (see http://tools.ietf.org/html/rfc2616.html#section-9)
 
 	@Override
 	public String toString()
@@ -37,7 +37,7 @@ public enum HttpMethod
 	 */
 	public static HttpMethod extractMethod(String requestLine) throws IllegalArgumentException
 	{
-		//TODO: Extract HTTP Method from request line (see http://tools.ietf.org/html/rfc2616.html#section-5.1).
+		// Extract HTTP Method from request line (see http://tools.ietf.org/html/rfc2616.html#section-5.1).
 		// Bianca
 		String extractedMethod = requestLine.split(" ")[0];
 		
