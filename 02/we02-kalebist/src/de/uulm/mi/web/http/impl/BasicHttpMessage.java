@@ -6,8 +6,6 @@ import de.uulm.mi.web.http.HttpMessage;
 import de.uulm.mi.web.http.HttpVersion;
 
 /**
- * An interface for basic HTTP message operations.
- * 
  * @author Leo Hnatek
  * 
  */
@@ -17,11 +15,6 @@ public class BasicHttpMessage implements HttpMessage {
 	private Map<String, String> httpHeaders;
 	private byte[] entity;
 	
-	/**
-	 * Returns the used protocol version of this message.
-	 * 
-	 * @return
-	 */
 	public HttpVersion getHttpVersion() {
 		return httpVersion;
 	}
@@ -29,11 +22,6 @@ public class BasicHttpMessage implements HttpMessage {
 		this.httpVersion = httpVersion;
 	}
 
-	/**
-	 * Returns a list of key-value header fields.
-	 * 
-	 * @return
-	 */
 	public Map<String, String> getHeaders() {
 		return httpHeaders;
 	}
@@ -41,11 +29,6 @@ public class BasicHttpMessage implements HttpMessage {
 		this.httpHeaders = httpHeaders;
 	}
 
-	/**
-	 * Returns the entity as a byte array or null, if no entity is available.
-	 * 
-	 * @return
-	 */
 	public byte[] getEntity() {
 		return entity;
 	}
