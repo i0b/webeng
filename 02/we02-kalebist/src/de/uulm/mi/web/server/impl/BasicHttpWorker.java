@@ -95,6 +95,7 @@ public class BasicHttpWorker extends HttpWorker {
 		if (!request.getHeaders().get("Host").equals(BasicHttpServer.SERVER_URI)) {
 			response.setHttpStatusCode(HttpStatusCode.BAD_REQUEST);
 			headers.put("Connection", "close");
+			response.setHeaders(headers);
 			return response;
 		}
 
@@ -108,11 +109,12 @@ public class BasicHttpWorker extends HttpWorker {
 				data = Files.readAllBytes(path);
 
 				response.setEntity(data);
+				headers.put("Content-Type",Files.probeContentType(path));
 
 				// Success
 				response.setHttpStatusCode(HttpStatusCode.OK);
 				//Default
-				response.getHeaders().put("Connection", "close");
+				//response.getHeaders().put("Connection", "close");
 				/*
 				//Sets KeepAlive Parameter
 				if(!(BasicHttpWorker.connections.containsKey(this.socket))) {
@@ -147,10 +149,11 @@ public class BasicHttpWorker extends HttpWorker {
 						: request.getRequestUri());
 				requestUri = BasicHttpServer.WEBROOT + requestUri;
 				Path path = Paths.get(requestUri);
-				String size = String.valueOf(Files.size(path));
+				//String size = String.valueOf(Files.size(path));
+				headers.put("Content-Type",Files.probeContentType(path));
 				response.setHttpStatusCode(HttpStatusCode.OK);
-				headers.put("Content-length", size);
-				headers.put("Connection", "close");
+				//headers.put("Content-length", size);
+				//headers.put("Connection", "close");
 			} catch (IOException e) {
 				// close connection!
 				headers.put("Connection", "close");
@@ -163,6 +166,8 @@ public class BasicHttpWorker extends HttpWorker {
 			response.setHttpStatusCode(HttpStatusCode.NOT_IMPLEMENTED);
 		}
 
+		response.setHeaders(headers);
+		
 		return response;
 	}
 
@@ -191,8 +196,9 @@ public class BasicHttpWorker extends HttpWorker {
 		httpresponse += "\r\n";
 		// httpresponse += entity;
 		outputStream.write(httpresponse.getBytes());
-		outputStream.write(response.getEntity());
-		// out.flush();
+		
+		if (response.getEntity() != null)
+			outputStream.write(response.getEntity());
 		outputStream.flush();
 		
 		

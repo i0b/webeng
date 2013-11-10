@@ -133,12 +133,15 @@ WiSe 2013/14, Inst. f. Medieninformatik, Universität Ulm
 		\begin{verbatim}http://tools.ietf.org/html/draft-ietf-httpbis-p2-semantics-21#section-5.3.4 \end{verbatim}
 
 	\item   Die angegebene Seite \begin{verbatim}http://mobile3.informatik.uni-ulm.de/we01/cat.jpg\end{verbatim}
-		ist eigentlich eine HTML Datei. Der Browser erkennt das und zeigt sie an.
+		ist eigentlich eine HTML Datei. Der Browser erkennt das anhand der "ubertragenen MIME Types und zeigt
+		die Datei korrekt an.
 
 		Da "uber CSS das Hintergrundbild f"ur den Body angegeben wurde, kann auch dieses angezeigt
-		werden. Unabh"angig davon, dass auch der Link darauf mit HTML falsch referenziert wurde
-		und eigentlich ein JPEG ist. Der Browser bestimmt vor dem Anzeigen des Elementes den Typen 
-		selber, weshalb zuletzt das Katzenbild erscheint.
+		werden. Unabh"angig davon, dass der Dateiname auf .html endet, wird auch hier "uber den MIME
+		Type die Datei erkannt. D.h. der Response des Servers enth"alt die Information:
+		\begin{verbatim}Content-Type: image/jpeg\end{verbatim} Der Browser integriert dieses File dann
+		korrekt in den DOM-Baum und rendert das Bild mit dem f"ur den Typen definierten Renderer, weshalb 
+		zuletzt das Katzenbild erscheint.
 		\begin{verbatim}http://www.w3schools.com/cssref/pr_background-image.asp\end{verbatim}
 
 \end{enumerate}
