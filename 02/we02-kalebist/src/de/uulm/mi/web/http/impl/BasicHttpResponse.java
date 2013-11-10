@@ -12,13 +12,6 @@ import de.uulm.mi.web.server.impl.BasicHttpServer;
 
 public class BasicHttpResponse implements HttpResponse {
 
-	//TODO constructor?!
-	/*
-	public BasicHttpResponse(BasicHttpMessage message, HttpStatusCode status) {
-		this.message = message;
-		this.status = status;
-	}*/
-
 	private HttpMessage message = new BasicHttpMessage();
 	private HttpStatusCode status;
 

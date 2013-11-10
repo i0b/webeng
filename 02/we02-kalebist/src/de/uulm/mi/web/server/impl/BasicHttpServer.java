@@ -69,17 +69,16 @@ public class BasicHttpServer implements HttpServer
 	@Override
 	public void dispatchRequest(Socket socket)
 	{
-		workerPool.submit(new BasicHttpWorker(socket, this));
+//		workerPool.submit(new BasicHttpWorker(socket, this));
 /*
  * For Testing
- 		BasicHttpWorker worker = new BasicHttpWorker(socket, this);
+ */		BasicHttpWorker worker = new BasicHttpWorker(socket, this);
 		try {
 			worker.call();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
  		}
-*/	}
+	}
 
 	@Override
 	public void start()

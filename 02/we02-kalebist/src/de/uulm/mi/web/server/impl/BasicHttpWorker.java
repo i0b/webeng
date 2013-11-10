@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import de.uulm.mi.web.http.HTTPConnections;
 import de.uulm.mi.web.http.HttpMethod;
 import de.uulm.mi.web.http.HttpRequest;
 import de.uulm.mi.web.http.HttpResponse;
@@ -21,14 +22,16 @@ import de.uulm.mi.web.http.impl.BasicHttpResponse;
 import de.uulm.mi.web.server.HttpWorker;
 
 public class BasicHttpWorker extends HttpWorker {
+	protected static Map<Socket, HTTPConnections> connections = new HashMap<Socket, HTTPConnections>();
+	
 	public BasicHttpWorker(Socket socket, BasicHttpServer server) {
 		super(socket, server);
+		
 	}
 
 	@Override
 	protected HttpRequest parseRequest(InputStream inputStream)
 			throws IOException {
-		// TODO Auto-generated method stub
 		// Stefan
 		// init vars
 		String requestLine = this.readLine(inputStream);
@@ -79,9 +82,8 @@ public class BasicHttpWorker extends HttpWorker {
 
 		// headers.put("Connection", "close");//keep-Alive client und server
 		// enden die verbindung nicht.
-		// Set Response (Processing)
-		// Body standardmaeig auf null, da einige header keinen body verwenden.
 
+		// Body standardmaeig auf null, da einige header keinen body verwenden.
 		
 		if (request == null){
 			response.setHttpStatusCode(HttpStatusCode.NOT_IMPLEMENTED);
@@ -107,9 +109,19 @@ public class BasicHttpWorker extends HttpWorker {
 
 				// Success
 				response.setHttpStatusCode(HttpStatusCode.OK);
-				response.getHeaders().put("Connection", "keep-alive");
-				response.getHeaders().put("Keep-Alive", "timeout=14 max=100");
-
+				//Default
+				response.getHeaders().put("Connection", "close");
+				/*
+				//Sets KeepAlive Parameter
+				if(!(BasicHttpWorker.connections.containsKey(this.socket))) {
+					BasicHttpWorker.connections.put(this.socket, new HTTPConnections(14, 100));
+				}
+				
+				
+				String max_connections = "max="+String.valueOf(BasicHttpWorker.connections.get(this.socket).getMaxConnections());
+				String timeout = String.valueOf(BasicHttpWorker.connections.get(this.socket).getTimeout());
+				response.getHeaders().put("Keep-Alive", "timeout="+timeout+" max="+max_connections);
+			 	*/
 			} catch (IOException e) {
 				// SEND 404-Error
 				response.setStatusCode(HttpStatusCode.NOT_FOUND);
@@ -138,7 +150,7 @@ public class BasicHttpWorker extends HttpWorker {
 				headers.put("Content-length", size);
 				headers.put("Connection", "close");
 			} catch (IOException e) {
-				// TODO close connection!
+				// close connection!
 				headers.put("Connection", "close");
 				response.setHttpStatusCode(HttpStatusCode.NOT_FOUND);
 				response.setHeaders(headers);
@@ -157,6 +169,7 @@ public class BasicHttpWorker extends HttpWorker {
 			throws IOException {
 		// Init
 		// PrintWriter out = new PrintWriter(outputStream, false);
+		
 		String statusline = response.getHttpVersion() + " "
 				+ response.getStatusCode().getCode() + " "
 				+ response.getStatusCode();
@@ -179,6 +192,8 @@ public class BasicHttpWorker extends HttpWorker {
 		outputStream.write(response.getEntity());
 		// out.flush();
 		outputStream.flush();
+		
+		
 
 	}
 
@@ -191,10 +206,15 @@ public class BasicHttpWorker extends HttpWorker {
 				.containsValue("keep-alive")));
 		boolean response_keepalive = (headers_response.containsKey("Connection") && (headers_response
 				.containsValue("keep-alive")));
-		if (request_keepalive && response_keepalive)
-			return true;
-		else
+		
+		//HTTPConnections c = BasicHttpWorker.connections.get(this.socket);
+		//c.update();
+		boolean response_NomaxConnections_NoTimeout = true; //c.keepAlive();
+		if (request_keepalive && response_keepalive && response_NomaxConnections_NoTimeout) {
+				return true;
+		} else {
 			return false;
+		}
 	}
 
 }

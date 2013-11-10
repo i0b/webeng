@@ -12,7 +12,6 @@ public class BasicHttpRequest implements HttpRequest
 	private HttpMessage message = new BasicHttpMessage();
 	private HttpMethod httpMethod;
 	private String requestUri;
-	//TODO constructor?!
 	public HttpVersion getHttpVersion()
 	{
 		return message.getHttpVersion();
