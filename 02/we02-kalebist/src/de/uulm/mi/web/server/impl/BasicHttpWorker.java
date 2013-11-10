@@ -20,125 +20,177 @@ import de.uulm.mi.web.http.impl.BasicHttpRequest;
 import de.uulm.mi.web.http.impl.BasicHttpResponse;
 import de.uulm.mi.web.server.HttpWorker;
 
-public class BasicHttpWorker extends HttpWorker
-{
-	public BasicHttpWorker(Socket socket, BasicHttpServer server)
-	{
+public class BasicHttpWorker extends HttpWorker {
+	public BasicHttpWorker(Socket socket, BasicHttpServer server) {
 		super(socket, server);
 	}
 
 	@Override
-	protected HttpRequest parseRequest(InputStream inputStream) throws IOException
-	{
+	protected HttpRequest parseRequest(InputStream inputStream)
+			throws IOException {
 		// TODO Auto-generated method stub
-		//Stefan
-		//init vars
+		// Stefan
+		// init vars
 		String requestLine = this.readLine(inputStream);
-		HttpMethod httpMethod = HttpMethod.extractMethod(requestLine);
+		HttpMethod httpMethod = null;
+		try {
+			httpMethod = HttpMethod.extractMethod(requestLine);
+		} catch (IllegalArgumentException e){
+			return null;
+		}
 		String requestUri = requestLine.split(" ")[1];
 		HttpVersion httpVersion = HttpVersion.extractVersion(requestLine);
-		
-		
-		//Restlichen HeaderInformationen in eine Map geschrieben...
+
+		// Restlichen HeaderInformationen in eine Map geschrieben...
 		Map<String, String> headers = new HashMap<String, String>();
-		while(! (requestLine = this.readLine(inputStream)).equals("")) {
+
+		while (!(requestLine = this.readLine(inputStream)).equals("")) {
 			String key = requestLine.split(": ")[0];
 			String value = requestLine.split(": ")[1];
 			headers.put(key, value);
 		}
-		
-		
-		//parse to Object httprequest
+
+		// parse to Object httprequest
 		BasicHttpRequest httprequest = new BasicHttpRequest();
 		httprequest.setHttpVersion(httpVersion);
 		httprequest.setHttpMethod(httpMethod);
 		httprequest.setRequestUri(requestUri);
 		httprequest.setHeaders(headers);
-		//TODO setEntity
+		// TODO setEntity
 		httprequest.setRequestUri(requestUri);
-		
-		//output
+
+		// output
 		return httprequest;
 	}
 
 	@Override
-	protected HttpResponse handleRequest(HttpRequest request)
-	{
-		
-		//TODO Keep-Alive in header..
-		request.getHeaders();
-		
+	protected HttpResponse handleRequest(HttpRequest request) {
+		// init
+		String requestUri = "";
+		byte[] data;
+
 		BasicHttpResponse response = new BasicHttpResponse();
-		response.setHttpVersion(HttpVersion.VERSION_1_1);
-		//response.setHeaders(headers);
+		Map<String, String> headers = response.getHeaders();
+
+		// Statusline
+
+		// Additional Headers
+
+		// keepAlive TODO: KeepAlive in Header richtig??
+
+		// headers.put("Connection", "close");//keep-Alive client und server
+		// enden die verbindung nicht.
+		// Set Response (Processing)
+		// Body standardmaeig auf null, da einige header keinen body verwenden.
+
 		
-		
-		if (request.getHttpMethod().equals(HttpMethod.GET)){
-			String requestUri = (request.getRequestUri().equals("/") ? "index.html" : request.getRequestUri());
-			requestUri = BasicHttpServer.WEBROOT+requestUri;
+		if (request == null){
+			response.setHttpStatusCode(HttpStatusCode.NOT_IMPLEMENTED);
+			return response;
 			
-			Path path = Paths.get(requestUri);
-			System.out.println(requestUri);
-			
-			byte[] data;
+		}
+
+		/*if (!request.getHeaders().get("Host").equals("localhost")) {
+			response.setHttpStatusCode(HttpStatusCode.BAD_REQUEST);
+			return response;
+		}*/
+
+		if (request.getHttpMethod().equals(HttpMethod.GET)) {
 			try {
+				// Try getting File
+				requestUri = (request.getRequestUri().equals("/") ? "index.html"
+						: request.getRequestUri());
+				requestUri = BasicHttpServer.WEBROOT + requestUri;
+				Path path = Paths.get(requestUri);
 				data = Files.readAllBytes(path);
+
 				response.setEntity(data);
-				response.setHttpStatusCode(HttpStatusCode.ACCEPTED);
-				Map <String, String> headers = new HashMap<String, String>();
-				headers.put("Server", BasicHttpServer.SERVER_NAME);
-				response.setHeaders(headers);
-				
+
+				// Success
+				response.setHttpStatusCode(HttpStatusCode.OK);
+
 			} catch (IOException e) {
+				// SEND 404-Error
 				response.setStatusCode(HttpStatusCode.NOT_FOUND);
+				requestUri = BasicHttpServer.ERROR_FOLDER + "404.html";
+				headers.put("Connection", "close");
+				Path path = Paths.get(requestUri);
+				try {
+					data = Files.readAllBytes(path);
+					response.setEntity(data);
+
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
 			}
-			
 
 		}
-		
-		else if (request.getHttpMethod().equals(HttpMethod.HEAD)){
-			
+
+		else if (request.getHttpMethod().equals(HttpMethod.HEAD)) {
+			try {
+				requestUri = (request.getRequestUri().equals("/") ? "index.html"
+						: request.getRequestUri());
+				requestUri = BasicHttpServer.WEBROOT + requestUri;
+				Path path = Paths.get(requestUri);
+				String size = String.valueOf(Files.size(path));
+				response.setHttpStatusCode(HttpStatusCode.OK);
+				headers.put("Content-length", size);
+			} catch (IOException e) {
+				// TODO close connection!
+				headers.put("Connection", "close");
+				response.setHttpStatusCode(HttpStatusCode.NOT_FOUND);
+				response.setHeaders(headers);
+			}
 		}
-		
-		
+
+		else {
+			response.setHttpStatusCode(HttpStatusCode.NOT_IMPLEMENTED);
+		}
+
 		return response;
 	}
 
 	@Override
-	protected void sendResponse(HttpResponse response, OutputStream outputStream) throws IOException
-	{
-		//Init
-		//PrintWriter out = new PrintWriter(outputStream, false);
-		String statusline = response.getHttpVersion()+" "+response.getStatusCode();
+	protected void sendResponse(HttpResponse response, OutputStream outputStream)
+			throws IOException {
+		// Init
+		// PrintWriter out = new PrintWriter(outputStream, false);
+		String statusline = response.getHttpVersion() + " "
+				+ response.getStatusCode().getCode() + " "
+				+ response.getStatusCode();
 		Vector<String> headers = new Vector<String>();
 
-		//response.getHeaders();
-		for(String key : response.getHeaders().keySet()) {
+		// response.getHeaders();
+		for (String key : response.getHeaders().keySet()) {
 			String value = response.getHeaders().get(key);
-			headers.add(key+": "+value);
+			headers.add(key + ": " + value);
 		}
-		
-		
-		//Output
-		String httpresponse = statusline+"\n";
-		for(String header_info : headers) {
-			httpresponse += header_info+" \n";
+
+		// Output
+		String httpresponse = statusline + "\n";
+		for (String header_info : headers) {
+			httpresponse += header_info + " \n";
 		}
 		httpresponse += "\r\n";
-//		httpresponse += entity;
+		// httpresponse += entity;
 		outputStream.write(httpresponse.getBytes());
 		outputStream.write(response.getEntity());
-		//out.flush();
+		// out.flush();
 		outputStream.flush();
 
 	}
 
 	@Override
-	protected boolean keepAlive(HttpRequest request, HttpResponse response)
-	{
-		// TODO Auto-generated method stub
-		return false;
+	protected boolean keepAlive(HttpRequest request, HttpResponse response) {
+		Map<String, String> headers = request.getHeaders();
+		boolean request_keepalive = (headers.containsKey("Connection") && headers
+				.containsValue("keep-alive"));
+		boolean response_keepalive = (headers.containsKey("Connection") && headers
+				.containsValue("keep-alive"));
+		if (request_keepalive && response_keepalive)
+			return true;
+		else
+			return false;
 	}
 
-	
 }

@@ -24,6 +24,8 @@ public class BasicHttpServer implements HttpServer
 	public static final int DEFAULT_PORT = 8080;
 	public static final String SERVER_SIGNATURE = SERVER_NAME + "/" + SERVER_VERSION;
 	public static final String WEBROOT = "webroot/";
+
+	public static final String ERROR_FOLDER = "errorpage/";
 	
 
 	private volatile boolean running = false;

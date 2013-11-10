@@ -1,11 +1,14 @@
 package de.uulm.mi.web.http.impl;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import de.uulm.mi.web.http.HttpMessage;
 import de.uulm.mi.web.http.HttpResponse;
 import de.uulm.mi.web.http.HttpStatusCode;
 import de.uulm.mi.web.http.HttpVersion;
+import de.uulm.mi.web.server.impl.BasicHttpServer;
 
 public class BasicHttpResponse implements HttpResponse {
 
@@ -24,7 +27,13 @@ public class BasicHttpResponse implements HttpResponse {
 		this.status = status;
 	}
 	public BasicHttpResponse() {
-		
+		this.setHttpVersion(HttpVersion.VERSION_1_1);
+		Map <String, String> headers = new HashMap<String, String>();
+		headers.put("Server", BasicHttpServer.SERVER_NAME);
+		headers.put("Date", new Date().toString());
+
+		this.setHeaders(headers);
+		this.setEntity(null);
 	}
 
 	public HttpVersion getHttpVersion() {
