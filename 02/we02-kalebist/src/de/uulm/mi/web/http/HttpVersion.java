@@ -1,8 +1,5 @@
 package de.uulm.mi.web.http;
 
-import java.io.ObjectInputStream.GetField;
-import java.util.regex.Matcher;
-
 import de.uulm.mi.web.Http;
 
 /**

@@ -56,7 +56,6 @@ public class BasicHttpWorker extends HttpWorker {
 		httprequest.setHttpMethod(httpMethod);
 		httprequest.setRequestUri(requestUri);
 		httprequest.setHeaders(headers);
-		// TODO setEntity
 		httprequest.setRequestUri(requestUri);
 
 		// output
@@ -98,7 +97,7 @@ public class BasicHttpWorker extends HttpWorker {
 		if (request.getHttpMethod().equals(HttpMethod.GET)) {
 			try {
 				// Try getting File
-				requestUri = (request.getRequestUri().equals("/") ? "index.html"
+				requestUri = (request.getRequestUri().equals("/") ? "/index.html"
 						: request.getRequestUri());
 				requestUri = BasicHttpServer.WEBROOT + requestUri;
 				Path path = Paths.get(requestUri);
@@ -108,6 +107,8 @@ public class BasicHttpWorker extends HttpWorker {
 
 				// Success
 				response.setHttpStatusCode(HttpStatusCode.OK);
+				response.getHeaders().put("Connection", "keep-alive");
+				response.getHeaders().put("Keep-Alive", "timeout=14 max=100");
 
 			} catch (IOException e) {
 				// SEND 404-Error
@@ -135,6 +136,7 @@ public class BasicHttpWorker extends HttpWorker {
 				String size = String.valueOf(Files.size(path));
 				response.setHttpStatusCode(HttpStatusCode.OK);
 				headers.put("Content-length", size);
+				headers.put("Connection", "close");
 			} catch (IOException e) {
 				// TODO close connection!
 				headers.put("Connection", "close");
@@ -182,11 +184,13 @@ public class BasicHttpWorker extends HttpWorker {
 
 	@Override
 	protected boolean keepAlive(HttpRequest request, HttpResponse response) {
-		Map<String, String> headers = request.getHeaders();
-		boolean request_keepalive = (headers.containsKey("Connection") && headers
-				.containsValue("keep-alive"));
-		boolean response_keepalive = (headers.containsKey("Connection") && headers
-				.containsValue("keep-alive"));
+		Map<String, String> headers_request = request.getHeaders();
+		Map<String, String> headers_response = response.getHeaders();
+		
+		boolean request_keepalive = (headers_request.containsKey("Connection") && (headers_request
+				.containsValue("keep-alive")));
+		boolean response_keepalive = (headers_response.containsKey("Connection") && (headers_response
+				.containsValue("keep-alive")));
 		if (request_keepalive && response_keepalive)
 			return true;
 		else

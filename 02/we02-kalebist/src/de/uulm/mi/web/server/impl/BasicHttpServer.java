@@ -72,13 +72,13 @@ public class BasicHttpServer implements HttpServer
 		workerPool.submit(new BasicHttpWorker(socket, this));
 /*
  * For Testing
- * 		BasicHttpWorker worker = new BasicHttpWorker(socket, this);
+ 		BasicHttpWorker worker = new BasicHttpWorker(socket, this);
 		try {
 			worker.call();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+ 		}
 */	}
 
 	@Override

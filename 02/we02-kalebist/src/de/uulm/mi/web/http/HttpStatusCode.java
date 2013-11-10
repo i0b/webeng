@@ -1,6 +1,5 @@
 package de.uulm.mi.web.http;
 
-import java.lang.ProcessBuilder.Redirect;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
