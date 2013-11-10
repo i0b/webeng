@@ -19,6 +19,7 @@ public class BasicHttpServer implements HttpServer
 {
 	// Bianca
 	public static final String SERVER_NAME = "Team KALEBIST";
+	public static final String SERVER_URI = "localhost:8080";
 	
 	public static final String SERVER_VERSION = "0.1";
 	public static final int DEFAULT_PORT = 8080;

@@ -87,14 +87,16 @@ public class BasicHttpWorker extends HttpWorker {
 		
 		if (request == null){
 			response.setHttpStatusCode(HttpStatusCode.NOT_IMPLEMENTED);
+			headers.put("Connection", "close");
 			return response;
 			
 		}
 
-		/*if (!request.getHeaders().get("Host").equals("localhost")) {
+		if (!request.getHeaders().get("Host").equals(BasicHttpServer.SERVER_URI)) {
 			response.setHttpStatusCode(HttpStatusCode.BAD_REQUEST);
+			headers.put("Connection", "close");
 			return response;
-		}*/
+		}
 
 		if (request.getHttpMethod().equals(HttpMethod.GET)) {
 			try {
@@ -199,20 +201,24 @@ public class BasicHttpWorker extends HttpWorker {
 
 	@Override
 	protected boolean keepAlive(HttpRequest request, HttpResponse response) {
-		Map<String, String> headers_request = request.getHeaders();
-		Map<String, String> headers_response = response.getHeaders();
-		
-		boolean request_keepalive = (headers_request.containsKey("Connection") && (headers_request
-				.containsValue("keep-alive")));
-		boolean response_keepalive = (headers_response.containsKey("Connection") && (headers_response
-				.containsValue("keep-alive")));
-		
-		//HTTPConnections c = BasicHttpWorker.connections.get(this.socket);
-		//c.update();
-		boolean response_NomaxConnections_NoTimeout = true; //c.keepAlive();
-		if (request_keepalive && response_keepalive && response_NomaxConnections_NoTimeout) {
-				return true;
-		} else {
+		try {
+			Map<String, String> headers_request = request.getHeaders();
+			Map<String, String> headers_response = response.getHeaders();
+			
+			boolean request_keepalive = (headers_request.containsKey("Connection") && (headers_request
+					.containsValue("keep-alive")));
+			boolean response_keepalive = (headers_response.containsKey("Connection") && (headers_response
+					.containsValue("keep-alive")));
+			
+			//HTTPConnections c = BasicHttpWorker.connections.get(this.socket);
+			//c.update();
+			boolean response_NomaxConnections_NoTimeout = true; //c.keepAlive();
+			if (request_keepalive && response_keepalive && response_NomaxConnections_NoTimeout) {
+					return true;
+			} else {
+				return false;
+			}
+		} catch (NullPointerException e) {
 			return false;
 		}
 	}
